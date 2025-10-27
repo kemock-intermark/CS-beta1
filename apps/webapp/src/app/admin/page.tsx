@@ -32,7 +32,7 @@ export default function AdminPage() {
       <div className="grid gap-4 mb-6">
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-bold mb-4">Управление событиями</h2>
-          <button onClick={() => router.push('/admin/events/new')} className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button onClick={() => router.push('/admin/events/create')} className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
             + Добавить событие
           </button>
         </div>
