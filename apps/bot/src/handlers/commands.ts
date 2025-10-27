@@ -55,8 +55,8 @@ export function setupCommands(bot: Bot) {
   bot.command('events', async (ctx: Context) => {
     try {
       // Get events from API
-      const userId = ctx.from?.id.toString();
-      const telegramId = ctx.from?.id.toString();
+      // const userId = ctx.from?.id.toString();
+      // const telegramId = ctx.from?.id.toString();
       
       const events = await apiClient.getEvents();
       

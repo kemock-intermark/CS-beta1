@@ -64,31 +64,23 @@ export async function sendInvoice(
   description: string
 ) {
   try {
-    const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-    const PAYMENT_TOKEN = process.env.TELEGRAM_PAYMENT_PROVIDER_TOKEN;
+    const PAYMENT_TOKEN = process.env.TELEGRAM_PAYMENT_PROVIDER_TOKEN as string | undefined;
     
     if (!PAYMENT_TOKEN) {
       throw new Error('Payment provider token not configured');
     }
     
     // Create invoice via API
-    await ctx.api.sendInvoice(
-      parseInt(userId),
-      {
-        title: 'ClubSuite - Бронирование',
-        description: description,
-        payload: `reservation_${reservationId}`,
-        provider_token: PAYMENT_TOKEN,
-        currency: 'USD',
-        prices: [{ label: 'Total', amount: Math.round(amount * 100) }],
-        max_tip_amount: 1000,
-        suggested_tip_amounts: [100, 200, 500],
-      }
-    );
+    await ctx.api.sendInvoice(parseInt(userId), 'ClubSuite - Бронирование', description, `reservation_${reservationId}`, PAYMENT_TOKEN, {
+      currency: 'USD',
+      prices: [{ label: 'Total', amount: Math.round(amount * 100) }],
+      max_tip_amount: 1000,
+      suggested_tip_amounts: [100, 200, 500],
+    });
     
     logger.info(`Invoice sent for reservation: ${reservationId}`);
   } catch (error) {
     logger.error('Error sending invoice:', error);
-    throw error;
+    throw error as any;
   }
 }

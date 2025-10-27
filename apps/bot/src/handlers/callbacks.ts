@@ -133,7 +133,9 @@ export function setupCallbacks(bot: any) {
 
   // Payment for reservation
   bot.callbackQuery(/^pay_reservation_(.+)$/, async (ctx: Context) => {
-    const reservationId = ctx.match[1];
+    const reservationId = Array.isArray((ctx as any).match)
+      ? (ctx as any).match[1]
+      : String((ctx as any).match ?? '');
     await ctx.answerCallbackQuery('Обработка платежа...');
     
     // Here you would create an invoice
