@@ -14,7 +14,7 @@ export default function DoorDevPanel() {
     lastSync: null,
     localRecords: 0,
     pendingSync: 0,
-    isOnline: navigator.onLine,
+    isOnline: typeof window !== 'undefined' ? navigator.onLine : true,
   });
 
   useEffect(() => {
