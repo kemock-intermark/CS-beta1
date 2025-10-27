@@ -1,7 +1,23 @@
 import axios from 'axios';
 import { getJWTToken } from './auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+function resolveApiBaseUrl(): string {
+  // 1) Build-time env from Next.js
+  const fromEnv = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (fromEnv && fromEnv.startsWith('http')) return fromEnv;
+
+  // 2) Runtime fallback for Render/Telegram webview
+  if (typeof window !== 'undefined') {
+    // Prefer explicit Render URL for API
+    const hardcoded = 'https://clubsuite-api.onrender.com';
+    return hardcoded;
+  }
+
+  // 3) Local default
+  return 'http://localhost:3001';
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -14,7 +30,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use((config) => {
   const token = getJWTToken();
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    (config.headers as any).Authorization = `Bearer ${token}`;
   }
   return config;
 });
