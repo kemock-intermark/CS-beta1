@@ -51,4 +51,16 @@ export const getReports = (startDate?: string, endDate?: string) =>
 export const validateTelegram = (initData: string) => 
   apiClient.post('/auth/tg/webapp/validate', { initData });
 
+export const adminCreateEvent = (payload: {
+  venueId: string;
+  hallId?: string;
+  name: string;
+  description?: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  capacity?: number;
+  coverCharge?: string;
+}) => apiClient.post('/catalog/admin/events', payload);
+
 export default apiClient;
