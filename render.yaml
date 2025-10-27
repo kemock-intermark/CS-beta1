@@ -5,8 +5,7 @@ services:
     region: oregon
     plan: starter
     autoDeploy: true
-    buildCommand: >-
-      corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/api run db:generate && pnpm --filter @clubsuite/api run build
+    buildCommand: corepack enable && npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/api run db:generate && pnpm --filter @clubsuite/api run build
     startCommand: pnpm --filter @clubsuite/api start
     envVars:
       - key: NODE_ENV
@@ -16,9 +15,7 @@ services:
           name: clubsuite-postgres
           property: connectionString
       - key: REDIS_URL
-        fromService:
-          name: clubsuite-redis
-          property: connectionString
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: TELEGRAM_BOT_TOKEN
@@ -32,8 +29,7 @@ services:
     region: oregon
     plan: starter
     autoDeploy: true
-    buildCommand: >-
-      corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/webapp run build
+    buildCommand: corepack enable && npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/webapp run build
     startCommand: pnpm --filter @clubsuite/webapp start
     envVars:
       - key: NODE_ENV
@@ -49,8 +45,7 @@ services:
     region: oregon
     plan: starter
     autoDeploy: true
-    buildCommand: >-
-      corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/bot run build
+    buildCommand: corepack enable && npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/bot run build
     startCommand: node apps/bot/dist/index.js
     envVars:
       - key: NODE_ENV
