@@ -48,4 +48,7 @@ export const scanTicket = (qrCode: string) => apiClient.post('/checkin/scan', { 
 export const getReports = (startDate?: string, endDate?: string) => 
   apiClient.get('/reports/overview', { params: { startDate, endDate } });
 
+export const validateTelegram = (initData: string) => 
+  apiClient.post('/auth/tg/webapp/validate', { initData });
+
 export default apiClient;

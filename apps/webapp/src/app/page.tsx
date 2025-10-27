@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getUserRole } from '@/lib/auth';
 import { Button } from '@/components/layout/Button';
+import { validateTelegram } from '@/lib/api-client';
 
 function HomeContent() {
   const router = useRouter();
@@ -28,18 +29,10 @@ function HomeContent() {
       
       if (initData) {
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'}/auth/tg/webapp/validate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ initData }),
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
+          const { data } = await validateTelegram(initData);
             localStorage.setItem('auth_token', data.accessToken);
             localStorage.setItem('user_role', data.user.role || 'guest');
             setRole(data.user.role || 'guest');
-          }
         } catch (error) {
           console.error('Auth error:', error);
         }
