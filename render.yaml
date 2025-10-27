@@ -62,4 +62,3 @@ services:
 databases:
   - name: clubsuite-postgres
     databaseName: clubsuite
-    plan: starter
