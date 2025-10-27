@@ -27,7 +27,7 @@
     "db:generate": "pnpm --filter @clubsuite/api run db:generate",
     "verify": "node tools/verify.mjs",
     "fix": "node tools/fix.mjs",
-    "prepare": "husky install"
+    "prepare": "node -e \"try{require('husky').install()}catch(e){}\""
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.4",
