@@ -1,0 +1,133 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class CatalogService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async getActiveEvents(filters?: {
+    status?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }) {
+    const where: any = {
+      isActive: true,
+      status: filters?.status || 'PUBLISHED',
+    };
+
+    if (filters?.startDate || filters?.endDate) {
+      where.date = {};
+      if (filters.startDate) {
+        where.date.gte = filters.startDate;
+      }
+      if (filters.endDate) {
+        where.date.lte = filters.endDate;
+      }
+    }
+
+    return this.prisma.event.findMany({
+      where,
+      include: {
+        venue: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+            city: true,
+          },
+        },
+        hall: {
+          select: {
+            id: true,
+            name: true,
+            capacity: true,
+          },
+        },
+        packages: {
+          where: { isAvailable: true },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            minGuests: true,
+            maxGuests: true,
+          },
+        },
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    });
+  }
+
+  async getEventById(id: string) {
+    const event = await this.prisma.event.findUnique({
+      where: { id },
+      include: {
+        venue: true,
+        hall: true,
+        packages: {
+          where: { isAvailable: true },
+        },
+      },
+    });
+
+    if (!event) {
+      throw new NotFoundException(`Event with ID ${id} not found`);
+    }
+
+    return event;
+  }
+
+  async getActivePackages(eventId?: string) {
+    const where: any = {
+      isAvailable: true,
+    };
+
+    if (eventId) {
+      where.eventId = eventId;
+      where.event = {
+        isActive: true,
+        status: 'PUBLISHED',
+      };
+    }
+
+    return this.prisma.package.findMany({
+      where,
+      include: {
+        event: {
+          select: {
+            id: true,
+            name: true,
+            date: true,
+            startTime: true,
+            endTime: true,
+          },
+        },
+      },
+      orderBy: {
+        price: 'asc',
+      },
+    });
+  }
+
+  async getPackageById(id: string) {
+    const pkg = await this.prisma.package.findUnique({
+      where: { id },
+      include: {
+        event: {
+          include: {
+            venue: true,
+            hall: true,
+          },
+        },
+      },
+    });
+
+    if (!pkg) {
+      throw new NotFoundException(`Package with ID ${id} not found`);
+    }
+
+    return pkg;
+  }
+}

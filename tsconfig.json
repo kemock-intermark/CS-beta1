@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@clubsuite/bot": ["./apps/bot/src"],
+      "@clubsuite/webapp": ["./apps/webapp/src"],
+      "@clubsuite/api": ["./apps/api/src"],
+      "@clubsuite/config": ["./packages/config/src"],
+      "@clubsuite/ui": ["./packages/ui/src"],
+      "@clubsuite/shared": ["./packages/shared/src"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "build", ".next", "out"]
+}

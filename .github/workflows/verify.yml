@@ -1,0 +1,100 @@
+name: Verify & QA
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: '0 0 * * *' # Daily at midnight
+
+jobs:
+  verify:
+    name: QA Verification
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [18, 20]
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: clubsuite_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm --filter @clubsuite/api run db:generate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/clubsuite_test
+
+      - name: Run migrations
+        run: pnpm --filter @clubsuite/api run db:migrate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/clubsuite_test
+
+      - name: Seed database
+        run: pnpm --filter @clubsuite/api run db:seed
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/clubsuite_test
+
+      - name: Run smoke E2E tests
+        run: pnpm --filter @clubsuite/api run test:e2e
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/clubsuite_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-secret-key-for-ci-verification
+          NODE_ENV: test
+
+      - name: Run verification script
+        run: node tools/verify.mjs --ci --no-telegram
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/clubsuite_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-secret-key-for-ci-verification
+          API_BASE_URL: http://localhost:3001
+          WEBAPP_BASE_URL: http://localhost:3000
+          TELEGRAM_BOT_TOKEN: 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11mock
+
+      - name: Upload verification report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: verify-report-node-${{ matrix.node }}
+          path: verify-report.txt
+          retention-days: 30
+

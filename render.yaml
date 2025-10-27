@@ -1,0 +1,84 @@
+services:
+  - type: web
+    name: clubsuite-api
+    env: node
+    region: oregon
+    buildCommand: pnpm --filter @clubsuite/api run build
+    startCommand: pnpm --filter @clubsuite/api --silent start
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_PAYMENT_PROVIDER_TOKEN
+        sync: false
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: clubsuite-api
+          property: url
+      - key: WEBAPP_BASE_URL
+        fromService:
+          type: web
+          name: clubsuite-webapp
+          property: url
+
+  - type: web
+    name: clubsuite-webapp
+    env: node
+    region: oregon
+    buildCommand: pnpm --filter @clubsuite/webapp run build
+    startCommand: pnpm --filter @clubsuite/webapp --silent start
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: clubsuite-api
+          property: url
+      - key: WEBAPP_BASE_URL
+        fromService:
+          type: web
+          name: clubsuite-webapp
+          property: url
+
+  - type: web
+    name: clubsuite-bot
+    env: node
+    region: oregon
+    buildCommand: pnpm --filter @clubsuite/bot run build
+    startCommand: node -e "import('./apps/bot/dist/index.js').then(m=>console.log('Bot module loaded')).catch(e=>console.error(e))"
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: RENDER
+        value: 'true'
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_BOT_SECRET
+        sync: false
+      - key: BOT_PUBLIC_URL
+        fromService:
+          type: web
+          name: clubsuite-bot
+          property: url
+
+databases:
+  - name: clubsuite-postgres
+    databaseName: clubsuite
+    plan: starter
+
+redis:
+  - name: clubsuite-redis
+    plan: starter
+

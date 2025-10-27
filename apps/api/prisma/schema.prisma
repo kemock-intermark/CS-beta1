@@ -1,0 +1,382 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  USER
+  VIP
+  PREMIUM
+  ADMIN
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  CHECKED_IN
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum TableStatus {
+  AVAILABLE
+  RESERVED
+  OCCUPIED
+  MAINTENANCE
+}
+
+// Main Models
+
+model User {
+  id           String        @id @default(uuid())
+  telegramId   String        @unique
+  firstName    String?
+  lastName     String?
+  username     String?
+  phone        String?
+  email        String?
+  role         UserRole      @default(USER)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  guestProfile      GuestProfile?
+  reservations      Reservation[]
+  tickets           Ticket[]
+  waitlistEntries   WaitlistEntry[]
+  checkins          Checkin[]
+  payments          Payment[]
+  messageLogs       MessageLog[]
+
+  @@map("users")
+}
+
+model Venue {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  address     String?
+  city        String?
+  country     String?
+  phone       String?
+  email       String?
+  website     String?
+  openingTime String?
+  closingTime String?
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  halls      Hall[]
+  events     Event[]
+  promoters  Promoter[]
+
+  @@map("venues")
+}
+
+model Hall {
+  id          String  @id @default(uuid())
+  venueId     String
+  name        String
+  description String?
+  capacity    Int?
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  venue       Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  tables      Table[]
+  events      Event[]
+
+  @@map("halls")
+}
+
+model Table {
+  id              String      @id @default(uuid())
+  hallId           String
+  name             String
+  description      String?
+  capacity         Int
+  minPurchase      Decimal?    @db.Decimal(10, 2)
+  status           TableStatus @default(AVAILABLE)
+  position         String?
+  metadata         Json?
+  isActive         Boolean     @default(true)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  // Relations
+  hall             Hall         @relation(fields: [hallId], references: [id], onDelete: Cascade)
+  reservations     Reservation[]
+  waitlistEntries  WaitlistEntry[]
+
+  @@map("tables")
+}
+
+model Event {
+  id              String      @id @default(uuid())
+  venueId         String
+  hallId          String?
+  name            String
+  description     String?
+  date            DateTime
+  startTime       DateTime
+  endTime         DateTime
+  status          EventStatus @default(DRAFT)
+  capacity        Int?
+  coverCharge     Decimal?    @db.Decimal(10, 2)
+  metadata        Json?
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  venue           Venue       @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  hall            Hall?       @relation(fields: [hallId], references: [id], onDelete: SetNull)
+  packages        Package[]
+  tickets         Ticket[]
+  reservations    Reservation[]
+  waitlistEntries WaitlistEntry[]
+  checkins       Checkin[]
+
+  @@map("events")
+  @@index([date])
+  @@index([status])
+}
+
+model Package {
+  id            String  @id @default(uuid())
+  eventId       String
+  name          String
+  description   String?
+  price         Decimal @db.Decimal(10, 2)
+  bottles       Json?
+  amenities     Json?
+  minGuests     Int?
+  maxGuests     Int?
+  isAvailable   Boolean @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  event         Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  reservations  Reservation[]
+
+  @@map("packages")
+}
+
+model GuestProfile {
+  id            String  @id @default(uuid())
+  userId        String  @unique
+  preferences   Json?
+  notes         String?
+  visitCount    Int     @default(0)
+  lastVisit     DateTime?
+  totalSpent    Decimal @default(0) @db.Decimal(10, 2)
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("guest_profiles")
+}
+
+model Reservation {
+  id              String            @id @default(uuid())
+  userId          String
+  eventId         String?
+  tableId         String?
+  packageId       String?
+  guestCount      Int
+  status          ReservationStatus @default(PENDING)
+  reservationDate DateTime
+  notes           String?
+  metadata        Json?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Relations
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event           Event?            @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  table           Table?            @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  package         Package?          @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  ticket          Ticket?
+  checkin         Checkin?
+  payment         Payment?
+  promoterAttrib  PromoterAttribution?
+  messageLogs     MessageLog[]
+
+  @@map("reservations")
+  @@index([status])
+  @@index([reservationDate])
+}
+
+model Ticket {
+  id            String  @id @default(uuid())
+  userId        String
+  eventId       String
+  reservationId String? @unique
+  type          String
+  price         Decimal @db.Decimal(10, 2)
+  qrCode        String  @unique
+  isScanned     Boolean @default(false)
+  scannedAt     DateTime?
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event         Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  reservation   Reservation?      @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+  checkin       Checkin?
+
+  @@map("tickets")
+  @@index([qrCode])
+}
+
+model WaitlistEntry {
+  id            String  @id @default(uuid())
+  userId        String
+  eventId       String
+  tableId       String?
+  priority      Int     @default(0)
+  status        String
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event         Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  table         Table?  @relation(fields: [tableId], references: [id], onDelete: SetNull)
+
+  @@map("waitlist_entries")
+  @@index([priority])
+}
+
+model Promoter {
+  id          String  @id @default(uuid())
+  venueId     String
+  name        String
+  code        String  @unique
+  phone       String?
+  email       String?
+  commission  Decimal @default(0) @db.Decimal(5, 2)
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  venue             Venue               @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  promoterAttribs   PromoterAttribution[]
+
+  @@map("promoters")
+  @@index([code])
+}
+
+model PromoterAttribution {
+  id            String  @id @default(uuid())
+  promoterId    String
+  reservationId String  @unique
+  commission    Decimal @db.Decimal(10, 2)
+  paid          Boolean @default(false)
+  paidAt        DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  promoter      Promoter    @relation(fields: [promoterId], references: [id], onDelete: Cascade)
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+
+  @@map("promoter_attributions")
+}
+
+model Checkin {
+  id            String  @id @default(uuid())
+  userId        String
+  eventId       String
+  ticketId      String? @unique
+  reservationId String? @unique
+  checkedInAt   DateTime @default(now())
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event         Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  ticket        Ticket?     @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  reservation   Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+
+  @@map("checkins")
+  @@index([checkedInAt])
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  userId          String
+  reservationId   String?       @unique
+  amount          Decimal       @db.Decimal(10, 2)
+  currency        String        @default("USD")
+  status          PaymentStatus @default(PENDING)
+  paymentMethod   String?
+  transactionId  String?       @unique
+  metadata        Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reservation     Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+
+  @@map("payments")
+  @@index([status])
+  @@index([transactionId])
+}
+
+model MessageLog {
+  id          String   @id @default(uuid())
+  userId      String
+  reservationId String?
+  messageType String
+  content     String?
+  status      String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reservation Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+
+  @@map("message_logs")
+  @@index([createdAt])
+}
