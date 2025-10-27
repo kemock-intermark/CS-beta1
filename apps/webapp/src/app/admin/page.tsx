@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { getReports } from '@/lib/api-client';
 
 export default function AdminPage() {
+  const router = useRouter();
   const [reports, setReports] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
@@ -30,21 +32,21 @@ export default function AdminPage() {
       <div className="grid gap-4 mb-6">
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-bold mb-4">Управление событиями</h2>
-          <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button onClick={() => router.push('/admin/events/new')} className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
             + Добавить событие
           </button>
         </div>
 
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-bold mb-4">Управление пакетами</h2>
-          <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button onClick={() => router.push('/admin/packages/new')} className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
             + Добавить пакет
           </button>
         </div>
 
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-bold mb-4">Пользователи</h2>
-          <button className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+          <button onClick={() => router.push('/admin/users')} className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
             Управление пользователями
           </button>
         </div>
