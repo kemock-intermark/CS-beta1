@@ -7,7 +7,7 @@ import Redis from 'ioredis';
 @ApiTags('health')
 @Controller('health')
 export class HealthController {
-  private redis: Redis;
+  private redis!: Redis;
 
   constructor(
     private readonly prisma: PrismaService,

@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
+import { PaymentStatus } from '@prisma/client';
 
 @Injectable()
 export class PaymentsService {
@@ -69,7 +70,7 @@ export class PaymentsService {
     await this.prisma.payment.update({
       where: { id: payment.id },
       data: {
-        status: paymentStatus,
+        status: paymentStatus as PaymentStatus,
       },
     });
 

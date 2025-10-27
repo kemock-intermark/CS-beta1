@@ -8,12 +8,11 @@ export class PromotersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createLead(promoterUserId: string, dto: CreateLeadDto) {
-    // Find promoter by user ID
-    const promoter = await this.prisma.promoter.findFirst({
+    // TODO: Fix promoter lookup - Promoter model is not linked to User
+    // For now, find by ID directly
+    const promoter = await this.prisma.promoter.findUnique({
       where: {
-        user: {
-          telegramId: promoterUserId,
-        },
+        id: promoterUserId,
       },
     });
 
@@ -65,11 +64,10 @@ export class PromotersService {
   }
 
   async getPromoterKPI(promoterUserId: string) {
-    const promoter = await this.prisma.promoter.findFirst({
+    // TODO: Fix promoter lookup - Promoter model is not linked to User
+    const promoter = await this.prisma.promoter.findUnique({
       where: {
-        user: {
-          telegramId: promoterUserId,
-        },
+        id: promoterUserId,
       },
       include: {
         promoterAttribs: {
@@ -86,12 +84,12 @@ export class PromotersService {
 
     const totalReservations = promoter.promoterAttribs.length;
     const confirmedReservations = promoter.promoterAttribs.filter(
-      (p) => p.reservation.status === 'CONFIRMED'
+      (p: any) => p.reservation.status === 'CONFIRMED'
     ).length;
-    const totalCommission = promoter.promoterAttribs.reduce((sum, p) => sum + Number(p.commission), 0);
+    const totalCommission = promoter.promoterAttribs.reduce((sum: number, p: any) => sum + Number(p.commission), 0);
     const paidCommission = promoter.promoterAttribs
-      .filter((p) => p.paid)
-      .reduce((sum, p) => sum + Number(p.commission), 0);
+      .filter((p: any) => p.paid)
+      .reduce((sum: number, p: any) => sum + Number(p.commission), 0);
 
     return {
       promoter: {

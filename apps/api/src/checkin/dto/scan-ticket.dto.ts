@@ -6,7 +6,7 @@ export class ScanTicketDto {
   @ApiProperty({ description: 'QR code from ticket' })
   @IsString()
   @IsNotEmpty()
-  qrCode: string;
+  qrCode!: string;
 }
 
 export const scanTicketSchema = z.object({

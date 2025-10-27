@@ -11,15 +11,15 @@ export class CreateInvoiceDto {
   @ApiProperty({ description: 'Amount', minimum: 0.01 })
   @IsNumber()
   @Min(0.01)
-  amount: number;
+  amount!: number;
 
   @ApiProperty({ description: 'Currency', default: 'USD' })
   @IsString()
-  currency: string;
+  currency!: string;
 
   @ApiProperty({ description: 'Description' })
   @IsString()
-  description: string;
+  description!: string;
 }
 
 export const createInvoiceSchema = z.object({

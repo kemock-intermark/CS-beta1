@@ -21,11 +21,11 @@ export class CreateReservationDto {
   @ApiProperty({ description: 'Number of guests', minimum: 1 })
   @IsInt()
   @Min(1)
-  guestCount: number;
+  guestCount!: number;
 
   @ApiProperty({ description: 'Reservation date', example: '2024-01-15T22:00:00Z' })
   @IsDateString()
-  reservationDate: string;
+  reservationDate!: string;
 
   @ApiProperty({ description: 'Additional notes', required: false })
   @IsString()

@@ -6,12 +6,12 @@ export class CreateTicketDto {
   @ApiProperty({ description: 'Event ID' })
   @IsString()
   @IsNotEmpty()
-  eventId: string;
+  eventId!: string;
 
   @ApiProperty({ description: 'Ticket type', example: 'VIP' })
   @IsString()
   @IsNotEmpty()
-  type: string;
+  type!: string;
 }
 
 export const createTicketSchema = z.object({

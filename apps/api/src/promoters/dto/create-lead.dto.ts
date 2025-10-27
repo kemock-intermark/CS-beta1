@@ -5,11 +5,11 @@ import { z } from 'zod';
 export class CreateLeadDto {
   @ApiProperty({ description: 'Guest first name' })
   @IsString()
-  firstName: string;
+  firstName!: string;
 
   @ApiProperty({ description: 'Guest last name' })
   @IsString()
-  lastName: string;
+  lastName!: string;
 
   @ApiProperty({ description: 'Guest phone', required: false })
   @IsString()

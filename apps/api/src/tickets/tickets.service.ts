@@ -27,9 +27,9 @@ export class TicketsService {
     }
 
     // Determine ticket price based on type
-    let price = event.coverCharge || 0;
+    let price = event.coverCharge ? Number(event.coverCharge) : 0;
     if (dto.type === 'VIP') {
-      price = event.coverCharge ? event.coverCharge * 2 : 100;
+      price = event.coverCharge ? Number(event.coverCharge) * 2 : 100;
     }
 
     // Create ticket first
@@ -84,7 +84,7 @@ export class TicketsService {
     });
   }
 
-  async scanTicket(qrCode: string, scannerId: string) {
+  async scanTicket(qrCode: string, _scannerId: string) {
     const ticket = await this.prisma.ticket.findUnique({
       where: { qrCode },
       include: {

@@ -33,11 +33,12 @@ export class RateLimitMiddleware implements NestMiddleware {
       res.setHeader('X-RateLimit-Reset', Date.now() + this.windowMs);
 
       if (current > this.maxRequests) {
-        return res.status(429).json({
+        res.status(429).json({
           statusCode: 429,
           message: 'Too Many Requests',
           error: 'Rate limit exceeded',
         });
+        return;
       }
 
       next();

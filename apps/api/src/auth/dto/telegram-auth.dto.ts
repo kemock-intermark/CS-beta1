@@ -10,7 +10,7 @@ export class TelegramAuthDto {
   })
   @IsString()
   @IsNotEmpty()
-  initData: string;
+  initData!: string;
 }
 
 export const telegramAuthSchema = z.object({
