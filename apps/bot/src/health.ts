@@ -1,8 +1,8 @@
 import { Bot } from 'grammy';
+import * as http from 'http';
 
 export function setupHealthEndpoint(bot: Bot, port: number = 3002) {
   // Simple HTTP server for health checks
-  const http = require('http');
   
   const server = http.createServer(async (req: any, res: any) => {
     if (req.url === '/bot/health' && req.method === 'GET') {

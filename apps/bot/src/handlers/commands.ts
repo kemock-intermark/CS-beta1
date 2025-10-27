@@ -1,5 +1,5 @@
 import { Bot, Context } from 'grammy';
-import { commandsMenu, bookMenu, eventsMenu, mainMenu } from '../keyboards';
+import { bookMenu, mainMenu } from '../keyboards';
 import { logger } from '../utils/logger';
 import { apiClient } from '../services/api-client';
 
