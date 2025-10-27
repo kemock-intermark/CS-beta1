@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getTelegramUser, getUserRole } from '@/lib/auth';
+import { getUserRole } from '@/lib/auth';
 import { Button } from '@/components/layout/Button';
 
 export default function Home() {

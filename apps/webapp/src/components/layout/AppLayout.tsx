@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getUserRole, isAuthenticated } from '@/lib/auth';
+import { isAuthenticated } from '@/lib/auth';
 import { Button } from './Button';
 
 interface AppLayoutProps {
@@ -9,12 +9,10 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children }: AppLayoutProps) {
-  const [role, setRole] = useState<'guest' | 'promoter' | 'door' | 'admin' | null>(null);
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
     setAuthenticated(isAuthenticated());
-    setRole(getUserRole());
   }, []);
 
   if (!authenticated) {

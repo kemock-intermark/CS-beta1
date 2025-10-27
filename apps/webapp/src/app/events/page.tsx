@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { getEvents } from '@/lib/api-client';
 import Link from 'next/link';
-import { Button } from '@/components/layout/Button';
 
 export default function EventsPage() {
   const [events, setEvents] = useState<any[]>([]);

@@ -3,6 +3,9 @@
 import { decode } from 'jsonwebtoken';
 import { getTelegramUser } from './telegram';
 
+// Re-export getTelegramUser for convenience
+export { getTelegramUser };
+
 export interface JWTPayload {
   userId: string;
   telegramId: string;
