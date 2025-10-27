@@ -86,19 +86,36 @@ if (isRender) {
   const secretPath = process.env.TELEGRAM_BOT_SECRET || 'secret';
   const port = process.env.PORT || 3000;
 
-  // Create a simple HTTP server to listen for webhook updates
-  http
-    .createServer(webhookCallback(bot, 'http'))
-    .listen(port, () => {
-      logger.info(`Webhook server started on port ${port}`);
-    });
+  const server = http.createServer(async (req, res) => {
+    try {
+      if (req.url === `/bot/${secretPath}` && req.method === 'POST') {
+        const webhookFn = webhookCallback(bot, 'http');
+        await webhookFn(req, res);
+      } else if (req.url === '/health' && req.method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ status: 'ok' }));
+      } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Not Found');
+      }
+    } catch (err) {
+      logger.error('HTTP Server Error:', err);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Internal Server Error');
+    }
+  });
 
+  server.listen(port, () => {
+    logger.info(`Webhook server started on port ${port}. Listening at /bot/${secretPath}`);
+  });
+
+  const webhookUrl = `https://clubsuite-bot.onrender.com/bot/${secretPath}`;
   bot.api
-    .setWebhook(`https://clubsuite-bot.onrender.com/bot/${secretPath}`, {
-      allowed_updates: ['message', 'callback_query', 'chat_member', 'chat_join_request'],
+    .setWebhook(webhookUrl, {
+      allowed_updates: ['message', 'callback_query', 'chat_member', 'chat_join_request', 'pre_checkout_query'],
     })
     .then(() => {
-      logger.info('Webhook configured successfully');
+      logger.info(`Webhook configured successfully: ${webhookUrl}`);
     })
     .catch((err) => {
       logger.error('Error setting webhook:', err);
