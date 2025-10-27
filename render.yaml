@@ -6,32 +6,27 @@ services:
     plan: starter
     autoDeploy: true
     buildCommand: >-
-      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/api run build"
+      bash -lc "corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/api run db:generate && pnpm --filter @clubsuite/api run build"
     startCommand: >-
-      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm --filter @clubsuite/api --silent start"
+      bash -lc "pnpm --filter @clubsuite/api start"
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: clubsuite-postgres
+          property: connectionString
       - key: REDIS_URL
-        sync: false
+        fromService:
+          type: redis
+          name: clubsuite-redis
+          property: connectionString
       - key: JWT_SECRET
-        sync: false
+        generateValue: true
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: TELEGRAM_PAYMENT_PROVIDER_TOKEN
         sync: false
-      - key: API_BASE_URL
-        fromService:
-          type: web
-          name: clubsuite-api
-          property: url
-      - key: WEBAPP_BASE_URL
-        fromService:
-          type: web
-          name: clubsuite-webapp
-          property: url
 
   - type: web
     name: clubsuite-webapp
@@ -40,22 +35,16 @@ services:
     plan: starter
     autoDeploy: true
     buildCommand: >-
-      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/webapp run build"
+      bash -lc "corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/webapp run build"
     startCommand: >-
-      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm --filter @clubsuite/webapp --silent start"
+      bash -lc "pnpm --filter @clubsuite/webapp start"
     envVars:
       - key: NODE_ENV
         value: production
       - key: API_BASE_URL
-        fromService:
-          type: web
-          name: clubsuite-api
-          property: url
+        sync: false
       - key: WEBAPP_BASE_URL
-        fromService:
-          type: web
-          name: clubsuite-webapp
-          property: url
+        sync: false
 
   - type: web
     name: clubsuite-bot
@@ -64,9 +53,9 @@ services:
     plan: starter
     autoDeploy: true
     buildCommand: >-
-      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/bot run build"
+      bash -lc "corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/bot run build"
     startCommand: >-
-      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm --filter @clubsuite/bot --silent start"
+      bash -lc "node apps/bot/dist/index.js"
     envVars:
       - key: NODE_ENV
         value: production
@@ -75,19 +64,16 @@ services:
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: TELEGRAM_BOT_SECRET
+        generateValue: true
+      - key: WEBAPP_BASE_URL
         sync: false
-      - key: BOT_PUBLIC_URL
-        fromService:
-          type: web
-          name: clubsuite-bot
-          property: url
-
-  - type: redis
-    name: clubsuite-redis
-    plan: starter
 
 databases:
   - name: clubsuite-postgres
     databaseName: clubsuite
     plan: starter
 
+  - type: redis
+    name: clubsuite-redis
+    plan: starter
+    ipAllowList: []
