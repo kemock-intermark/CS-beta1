@@ -6,9 +6,8 @@ services:
     plan: starter
     autoDeploy: true
     buildCommand: >-
-      bash -lc "corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/api run db:generate && pnpm --filter @clubsuite/api run build"
-    startCommand: >-
-      bash -lc "pnpm --filter @clubsuite/api start"
+      corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/api run db:generate && pnpm --filter @clubsuite/api run build
+    startCommand: pnpm --filter @clubsuite/api start
     envVars:
       - key: NODE_ENV
         value: production
@@ -18,7 +17,6 @@ services:
           property: connectionString
       - key: REDIS_URL
         fromService:
-          type: redis
           name: clubsuite-redis
           property: connectionString
       - key: JWT_SECRET
@@ -35,9 +33,8 @@ services:
     plan: starter
     autoDeploy: true
     buildCommand: >-
-      bash -lc "corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/webapp run build"
-    startCommand: >-
-      bash -lc "pnpm --filter @clubsuite/webapp start"
+      corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/webapp run build
+    startCommand: pnpm --filter @clubsuite/webapp start
     envVars:
       - key: NODE_ENV
         value: production
@@ -53,9 +50,8 @@ services:
     plan: starter
     autoDeploy: true
     buildCommand: >-
-      bash -lc "corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/bot run build"
-    startCommand: >-
-      bash -lc "node apps/bot/dist/index.js"
+      corepack enable && pnpm -v || npm i -g pnpm@latest && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/bot run build
+    startCommand: node apps/bot/dist/index.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -72,8 +68,3 @@ databases:
   - name: clubsuite-postgres
     databaseName: clubsuite
     plan: starter
-
-  - type: redis
-    name: clubsuite-redis
-    plan: starter
-    ipAllowList: []
