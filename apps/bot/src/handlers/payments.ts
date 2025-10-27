@@ -1,10 +1,11 @@
 import { Context } from 'grammy';
 import { logger } from '../utils/logger.js';
 import { apiClient } from '../services/api-client.js';
+import { Bot } from 'grammy';
 
-export function setupPayments(bot: any) {
-  // Handle pre-checkout query
-  bot.on('pre_checkout_query', async (ctx: any) => {
+export function setupPayments(bot: Bot<Context>): void {
+  // Pre-checkout query handler
+  bot.on('pre_checkout_query', async (ctx) => {
     try {
       const invoicePayload = ctx.preCheckoutQuery.invoice_payload;
       logger.info(`Pre-checkout query: ${invoicePayload}`);
@@ -22,8 +23,12 @@ export function setupPayments(bot: any) {
     }
   });
 
-  // Handle successful payment
-  bot.on('successful_payment', async (ctx: any) => {
+  // Successful payment handler
+  bot.on('message:successful_payment', async (ctx) => {
+    logger.info('Successful payment received', {
+      telegramId: ctx.from.id,
+      payload: ctx.message.successful_payment.invoice_payload,
+    });
     try {
       const payment = ctx.message.successful_payment;
       logger.info(`Successful payment: ${payment.invoice_payload}`);
