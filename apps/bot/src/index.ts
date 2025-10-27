@@ -1,10 +1,10 @@
 import { Bot, Context, webhookCallback } from 'grammy';
 import { run } from '@grammyjs/runner';
 import * as http from 'http';
-import { setupCommands } from './handlers/commands';
-import { setupCallbacks } from './handlers/callbacks';
-import { setupPayments } from './handlers/payments';
-import { logger } from './utils/logger';
+import { setupCommands } from './handlers/commands.js';
+import { setupCallbacks } from './handlers/callbacks.js';
+import { setupPayments } from './handlers/payments.js';
+import { logger } from './utils/logger.js';
 // import { setupHealthEndpoint } from './health'; // unused in current setup
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
