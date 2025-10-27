@@ -70,15 +70,15 @@ export async function sendInvoice(
       throw new Error('Payment provider token not configured');
     }
     
-    // Create invoice via API
-    await ctx.api.sendInvoice(parseInt(userId), {
-      title: 'ClubSuite - Бронирование',
-      description: description,
-      payload: `reservation_${reservationId}`,
-      provider_token: PAYMENT_TOKEN,
-      currency: 'USD',
-      prices: [{ label: 'Total', amount: Math.round(amount * 100) }],
-    });
+    // Create invoice via API  
+    await ctx.api.sendInvoice(
+      parseInt(userId),
+      'ClubSuite - Бронирование',
+      description,
+      `reservation_${reservationId}`,
+      PAYMENT_TOKEN,
+      [{ label: 'Total', amount: Math.round(amount * 100) }]
+    );
     
     logger.info(`Invoice sent for reservation: ${reservationId}`);
   } catch (error) {
