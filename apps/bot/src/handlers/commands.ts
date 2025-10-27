@@ -1,7 +1,7 @@
 import { Bot, Context } from 'grammy';
-import { bookMenu, mainMenu } from '../keyboards';
-import { logger } from '../utils/logger';
-import { apiClient } from '../services/api-client';
+import { bookMenu, mainMenu } from '../keyboards/index.js';
+import { logger } from '../utils/logger.js';
+import { apiClient } from '../services/api-client.js';
 
 export function setupCommands(bot: Bot) {
   // /start command

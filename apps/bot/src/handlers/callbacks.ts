@@ -1,7 +1,7 @@
 import { Context } from 'grammy';
-import { apiClient } from '../services/api-client';
-import { logger } from '../utils/logger';
-import { bookMenu, eventsMenu, myMenu, mainMenu } from '../keyboards';
+import { apiClient } from '../services/api-client.js';
+import { logger } from '../utils/logger.js';
+import { bookMenu, eventsMenu, myMenu, mainMenu } from '../keyboards/index.js';
 
 export function setupCallbacks(bot: any) {
   // Main menu

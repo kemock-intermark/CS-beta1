@@ -1,6 +1,6 @@
 import { Context } from 'grammy';
-import { logger } from '../utils/logger';
-import { apiClient } from '../services/api-client';
+import { logger } from '../utils/logger.js';
+import { apiClient } from '../services/api-client.js';
 
 export function setupPayments(bot: any) {
   // Handle pre-checkout query
