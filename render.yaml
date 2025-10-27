@@ -3,9 +3,12 @@ services:
     name: clubsuite-api
     env: node
     region: oregon
-    buildCommand: pnpm --filter @clubsuite/api run build
-    startCommand: pnpm --filter @clubsuite/api --silent start
     plan: starter
+    autoDeploy: true
+    buildCommand: >-
+      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/api run build"
+    startCommand: >-
+      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm --filter @clubsuite/api --silent start"
     envVars:
       - key: NODE_ENV
         value: production
@@ -34,9 +37,12 @@ services:
     name: clubsuite-webapp
     env: node
     region: oregon
-    buildCommand: pnpm --filter @clubsuite/webapp run build
-    startCommand: pnpm --filter @clubsuite/webapp --silent start
     plan: starter
+    autoDeploy: true
+    buildCommand: >-
+      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/webapp run build"
+    startCommand: >-
+      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm --filter @clubsuite/webapp --silent start"
     envVars:
       - key: NODE_ENV
         value: production
@@ -55,9 +61,12 @@ services:
     name: clubsuite-bot
     env: node
     region: oregon
-    buildCommand: pnpm --filter @clubsuite/bot run build
-    startCommand: node -e "import('./apps/bot/dist/index.js').then(m=>console.log('Bot module loaded')).catch(e=>console.error(e))"
     plan: starter
+    autoDeploy: true
+    buildCommand: >-
+      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/bot run build"
+    startCommand: >-
+      bash -lc "corepack enable && (pnpm -v || npm i -g pnpm) && pnpm --filter @clubsuite/bot --silent start"
     envVars:
       - key: NODE_ENV
         value: production
@@ -73,12 +82,12 @@ services:
           name: clubsuite-bot
           property: url
 
+  - type: redis
+    name: clubsuite-redis
+    plan: starter
+
 databases:
   - name: clubsuite-postgres
     databaseName: clubsuite
-    plan: starter
-
-redis:
-  - name: clubsuite-redis
     plan: starter
 
