@@ -5,10 +5,10 @@ import { setupCommands } from './handlers/commands';
 import { setupCallbacks } from './handlers/callbacks';
 import { setupPayments } from './handlers/payments';
 import { logger } from './utils/logger';
-import { setupHealthEndpoint } from './health';
+// import { setupHealthEndpoint } from './health'; // unused in current setup
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL;
+// const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL; // unused
 
 if (!BOT_TOKEN) {
   throw new Error('TELEGRAM_BOT_TOKEN is not set');

@@ -22,7 +22,10 @@ export function setupHealthEndpoint(bot: Bot, port: number = 3002) {
         res.end(JSON.stringify(health));
       } catch (error) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ status: 'error', error: error.message }));
+        res.end(JSON.stringify({ 
+          status: 'error', 
+          error: typeof error === 'object' && error && 'message' in error ? (error as any).message : String(error)
+        }));
       }
     } else {
       res.writeHead(404);

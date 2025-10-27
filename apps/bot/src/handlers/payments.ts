@@ -71,11 +71,13 @@ export async function sendInvoice(
     }
     
     // Create invoice via API
-    await ctx.api.sendInvoice(parseInt(userId), 'ClubSuite - Бронирование', description, `reservation_${reservationId}`, PAYMENT_TOKEN, {
+    await ctx.api.sendInvoice(parseInt(userId), {
+      title: 'ClubSuite - Бронирование',
+      description: description,
+      payload: `reservation_${reservationId}`,
+      provider_token: PAYMENT_TOKEN,
       currency: 'USD',
       prices: [{ label: 'Total', amount: Math.round(amount * 100) }],
-      max_tip_amount: 1000,
-      suggested_tip_amounts: [100, 200, 500],
     });
     
     logger.info(`Invoice sent for reservation: ${reservationId}`);
