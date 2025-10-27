@@ -34,10 +34,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: API_BASE_URL
-        sync: false
-      - key: WEBAPP_BASE_URL
-        sync: false
+      - key: NEXT_PUBLIC_API_BASE_URL
+        value: https://clubsuite-api.onrender.com
 
   - type: web
     name: clubsuite-bot
@@ -57,7 +55,9 @@ services:
       - key: TELEGRAM_BOT_SECRET
         generateValue: true
       - key: WEBAPP_BASE_URL
-        sync: false
+        value: https://clubsuite-webapp.onrender.com
+      - key: API_BASE_URL
+        value: https://clubsuite-api.onrender.com
 
 databases:
   - name: clubsuite-postgres
