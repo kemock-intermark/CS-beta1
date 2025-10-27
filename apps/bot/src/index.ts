@@ -79,45 +79,30 @@ bot.catch((err) => {
 });
 
 // Server/webhook or long polling based on environment
-const isRender = process.env.RENDER === 'true' || !!process.env.PORT;
-const PORT = Number(process.env.PORT || 3002);
+const isRender = process.env.RENDER === 'true';
 
 if (isRender) {
-  const handleUpdate = webhookCallback(bot, 'http');
+  logger.info('Running in Render environment, starting webhook server...');
+  const secretPath = process.env.TELEGRAM_BOT_SECRET || 'secret';
+  const port = process.env.PORT || 3000;
 
-  const server = http.createServer(async (req, res) => {
-    try {
-      if (req.method === 'GET' && req.url && req.url.startsWith('/bot/health')) {
-        const me = await bot.api.getMe();
-        const webhookInfo = await bot.api.getWebhookInfo();
-        const health = {
-          status: 'ok',
-          timestamp: new Date().toISOString(),
-          username: me.username,
-          webhook: !!webhookInfo.url,
-          webhookUrl: webhookInfo.url || null,
-        };
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(health));
-        return;
-      }
+  // Create a simple HTTP server to listen for webhook updates
+  http
+    .createServer(webhookCallback(bot, 'http'))
+    .listen(port, () => {
+      logger.info(`Webhook server started on port ${port}`);
+    });
 
-      if (req.method === 'POST' && req.url && req.url.startsWith('/bot/webhook')) {
-        return handleUpdate(req as any, res as any);
-      }
-
-      res.statusCode = 404;
-      res.end();
-    } catch (e: any) {
-      logger.error('Bot HTTP server error:', e);
-      res.statusCode = 500;
-      res.end('Internal Server Error');
-    }
-  });
-
-  server.listen(PORT, () => {
-    logger.info(`🏥 Bot HTTP server listening on :${PORT}`);
-  });
+  bot.api
+    .setWebhook(`https://clubsuite-bot.onrender.com/bot/${secretPath}`, {
+      allowed_updates: ['message', 'callback_query', 'chat_member', 'chat_join_request'],
+    })
+    .then(() => {
+      logger.info('Webhook configured successfully');
+    })
+    .catch((err) => {
+      logger.error('Error setting webhook:', err);
+    });
 } else if (process.env.NODE_ENV === 'development') {
   logger.info('🤖 Bot started in development mode (long polling)');
   run(bot);
