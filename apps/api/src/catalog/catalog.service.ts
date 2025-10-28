@@ -320,4 +320,37 @@ export class CatalogService {
       },
     };
   }
+
+  async getAllEvents() {
+    return this.prisma.event.findMany({
+      include: {
+        venue: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+            city: true,
+          },
+        },
+        hall: {
+          select: {
+            id: true,
+            name: true,
+            capacity: true,
+          },
+        },
+        packages: {
+          where: { isAvailable: true },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+          },
+        },
+      },
+      orderBy: {
+        date: 'desc',
+      },
+    });
+  }
 }

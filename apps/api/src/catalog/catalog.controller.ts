@@ -101,4 +101,13 @@ export class CatalogController {
   async seedDatabase() {
     return this.catalogService.seedDatabase();
   }
+
+  @Get('admin/events')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @ApiOperation({ summary: 'Get all events (admin)' })
+  @ApiResponse({ status: 200, description: 'List of all events' })
+  async getAllEvents() {
+    return this.catalogService.getAllEvents();
+  }
 }

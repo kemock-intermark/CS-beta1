@@ -74,4 +74,6 @@ export const adminCreatePackage = (payload: {
 
 export const adminSeedDatabase = () => apiClient.post('/catalog/admin/seed');
 
+export const adminGetEvents = () => apiClient.get('/catalog/admin/events');
+
 export default apiClient;
