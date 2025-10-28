@@ -4,6 +4,7 @@ import * as http from 'http';
 import { setupCommands } from './handlers/commands.js';
 import { setupCallbacks } from './handlers/callbacks.js';
 import { setupPayments } from './handlers/payments.js';
+import { setupPromoterCommands } from './handlers/promoter.js';
 import { logger } from './utils/logger.js';
 // import { setupHealthEndpoint } from './health'; // unused in current setup
 
@@ -27,6 +28,7 @@ bot.use(async (ctx: Context, next) => {
 setupCommands(bot);
 setupCallbacks(bot);
 setupPayments(bot);
+setupPromoterCommands(bot);
 
 // Setup menu button
 bot.command('setmenu', async (ctx) => {
@@ -53,6 +55,7 @@ bot.api.setMyCommands([
   { command: 'book', description: 'Забронировать стол' },
   { command: 'events', description: 'Мероприятия' },
   { command: 'my', description: 'Мои бронирования' },
+  { command: 'promoter', description: 'Промоутер панель' },
   { command: 'help', description: 'Справка' },
 ]);
 
