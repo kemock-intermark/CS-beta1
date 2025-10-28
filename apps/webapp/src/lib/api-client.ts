@@ -63,4 +63,13 @@ export const adminCreateEvent = (payload: {
   coverCharge?: string;
 }) => apiClient.post('/catalog/admin/events', payload);
 
+export const adminCreatePackage = (payload: {
+  eventId: string;
+  name: string;
+  description?: string;
+  price: string;
+  minGuests?: number;
+  maxGuests?: number;
+}) => apiClient.post('/catalog/admin/packages', payload);
+
 export default apiClient;

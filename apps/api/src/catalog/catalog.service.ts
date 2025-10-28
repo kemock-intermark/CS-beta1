@@ -160,4 +160,30 @@ export class CatalogService {
     });
     return event;
   }
+
+  async createPackage(dto: {
+    eventId: string;
+    name: string;
+    description?: string;
+    price: string;
+    minGuests?: number;
+    maxGuests?: number;
+    bottles?: any;
+    amenities?: any;
+  }) {
+    const pkg = await this.prisma.package.create({
+      data: {
+        eventId: dto.eventId,
+        name: dto.name,
+        description: dto.description,
+        price: new Prisma.Decimal(dto.price),
+        minGuests: dto.minGuests,
+        maxGuests: dto.maxGuests,
+        bottles: dto.bottles,
+        amenities: dto.amenities,
+        isAvailable: true,
+      },
+    });
+    return pkg;
+  }
 }

@@ -18,6 +18,7 @@ import { CatalogService } from './catalog.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RoleGuard, Roles, UserRole } from '../guards/role.guard';
 import { CreateEventDto } from './dto/create-event.dto';
+import { CreatePackageDto } from './dto/create-package.dto';
 import { CurrentUser } from '../decorators/user.decorator';
 
 @ApiTags('catalog')
@@ -81,5 +82,14 @@ export class CatalogController {
   @ApiResponse({ status: 404, description: 'Package not found' })
   async getPackageById(@Param('id') id: string) {
     return this.catalogService.getPackageById(id);
+  }
+
+  @Post('admin/packages')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @ApiOperation({ summary: 'Create package (admin)' })
+  @ApiResponse({ status: 201, description: 'Package created' })
+  async createPackage(@Body() dto: CreatePackageDto) {
+    return this.catalogService.createPackage(dto);
   }
 }
