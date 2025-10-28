@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getEventById } from '@/lib/api-client';
+import { getEventById, purchaseTicket } from '@/lib/api-client';
 
 export default function EventDetailPage() {
   const { id } = useParams();
@@ -11,6 +11,7 @@ export default function EventDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
+  const [purchasing, setPurchasing] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -28,6 +29,56 @@ export default function EventDetailPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBuyTicket = async () => {
+    if (!event) return;
+    
+    setPurchasing(true);
+    try {
+      // Check if we're in Telegram WebApp
+      const telegram = (window as any).Telegram?.WebApp;
+      
+      if (telegram) {
+        // We're in Telegram - trigger payment through bot
+        const payload = {
+          eventId: event.id,
+          packageId: selectedPackage?.id,
+          amount: selectedPackage?.price || event.coverCharge || 0,
+        };
+        
+        // Close WebApp and let bot handle payment
+        telegram.close();
+        
+        // Alternative: Open bot chat with deep link to start payment
+        const botUsername = 'ClubSuiteBot'; // TODO: Get from env
+        const paymentData = btoa(JSON.stringify(payload));
+        window.open(`https://t.me/${botUsername}?start=buy_${paymentData}`, '_blank');
+      } else {
+        // Not in Telegram - create ticket directly (for testing)
+        await purchaseTicket({
+          eventId: event.id,
+          packageId: selectedPackage?.id,
+        });
+        
+        alert('Билет создан! В реальном приложении это работает только через Telegram.');
+        router.push('/my/tickets');
+      }
+    } catch (error: any) {
+      console.error('Purchase error:', error);
+      alert('Ошибка покупки. Пожалуйста, попробуйте через Telegram бот.');
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
+  const handleReserveTable = () => {
+    // Redirect to booking with table type
+    router.push(`/book?event=${event.id}&type=table${selectedPackage ? `&package=${selectedPackage.id}` : ''}`);
+  };
+
+  const handleJoinWaitlist = () => {
+    router.push(`/waitlist?event=${event.id}`);
   };
 
   if (loading) {
@@ -80,7 +131,7 @@ export default function EventDetailPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Hero Section with Gradient */}
+      {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-purple-900/10 to-black"></div>
         <div className="absolute inset-0 opacity-10" style={{
@@ -155,19 +206,6 @@ export default function EventDetailPage() {
                   <p className="text-gray-400">Doors open at 21:30</p>
                 </div>
                 
-                {event.hall && (
-                  <div className="space-y-2">
-                    <div className="flex items-center text-gray-500 text-sm uppercase tracking-wider">
-                      <svg className="w-4 h-4 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                      </svg>
-                      Hall
-                    </div>
-                    <p className="text-white text-xl font-semibold">{event.hall.name}</p>
-                    {event.capacity && <p className="text-gray-400">Capacity: {event.capacity} guests</p>}
-                  </div>
-                )}
-                
                 {event.coverCharge && (
                   <div className="space-y-2">
                     <div className="flex items-center text-gray-500 text-sm uppercase tracking-wider">
@@ -194,7 +232,7 @@ export default function EventDetailPage() {
                   {event.packages.map((pkg: any) => (
                     <div 
                       key={pkg.id} 
-                      onClick={() => setSelectedPackage(pkg)}
+                      onClick={() => setSelectedPackage(pkg.id === selectedPackage?.id ? null : pkg)}
                       className={`relative overflow-hidden rounded-xl border p-6 cursor-pointer transition-all duration-300 ${
                         selectedPackage?.id === pkg.id 
                           ? 'bg-gradient-to-r from-purple-900/50 to-pink-900/50 border-purple-500' 
@@ -252,21 +290,22 @@ export default function EventDetailPage() {
               
               <div className="space-y-4">
                 <button 
-                  onClick={() => router.push(`/book?event=${event.id}${selectedPackage ? `&package=${selectedPackage.id}` : ''}`)}
-                  className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
+                  onClick={handleBuyTicket}
+                  disabled={purchasing}
+                  className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                 >
-                  {selectedPackage ? 'Book Package' : 'Buy Ticket'}
+                  {purchasing ? 'Processing...' : (selectedPackage ? 'Buy Package' : 'Buy Ticket')}
                 </button>
                 
                 <button 
-                  onClick={() => router.push(`/book?event=${event.id}&type=table`)}
+                  onClick={handleReserveTable}
                   className="w-full py-4 bg-gradient-to-r from-gray-800 to-gray-900 text-white font-bold rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-300"
                 >
                   Reserve Table
                 </button>
                 
                 <button 
-                  onClick={() => router.push(`/waitlist?event=${event.id}`)}
+                  onClick={handleJoinWaitlist}
                   className="w-full py-4 bg-transparent border border-gray-700 text-gray-400 font-bold rounded-xl hover:bg-gray-900/50 transition-all duration-300"
                 >
                   Join Waitlist
@@ -275,10 +314,10 @@ export default function EventDetailPage() {
               
               <div className="mt-6 pt-6 border-t border-gray-800">
                 <p className="text-xs text-gray-500 text-center">
-                  Secure payment via Telegram
+                  💳 Secure payment via Telegram
                 </p>
                 <p className="text-xs text-gray-500 text-center mt-2">
-                  Free cancellation up to 24h before
+                  ❌ Free cancellation up to 24h before
                 </p>
               </div>
             </div>

@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "next": "^14.0.4",
     "postcss": "^8.4.32",
+    "qr-scanner": "^1.4.2",
     "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
