@@ -42,7 +42,6 @@ export class CatalogController {
   }
 
   @Get('events/:id')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get event by ID' })
   @ApiParam({ name: 'id', description: 'Event ID' })
   @ApiResponse({ status: 200, description: 'Event details' })
