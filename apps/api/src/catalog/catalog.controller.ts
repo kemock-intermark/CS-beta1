@@ -16,6 +16,8 @@ import {
 } from '@nestjs/swagger';
 import { CatalogService } from './catalog.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { RoleGuard, Roles, UserRole } from '../guards/role.guard';
+import { CreateEventDto } from './dto/create-event.dto';
 import { CurrentUser } from '../decorators/user.decorator';
 
 @ApiTags('catalog')
@@ -47,6 +49,15 @@ export class CatalogController {
   @ApiResponse({ status: 404, description: 'Event not found' })
   async getEventById(@Param('id') id: string) {
     return this.catalogService.getEventById(id);
+  }
+
+  @Post('admin/events')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @ApiOperation({ summary: 'Create event (admin)' })
+  @ApiResponse({ status: 201, description: 'Event created' })
+  async createEvent(@Body() dto: CreateEventDto) {
+    return this.catalogService.createEvent(dto);
   }
 
   @Get('packages')

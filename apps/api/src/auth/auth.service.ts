@@ -121,4 +121,29 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
   }
+
+  async browserLogin(username: string, secret: string) {
+    const allowed = this.configService.get<string>('BROWSER_LOGIN_SECRET');
+    if (!allowed || secret !== allowed) {
+      throw new UnauthorizedException('Invalid secret');
+    }
+
+    const user = await this.prisma.user.findFirst({ where: { username } });
+    if (!user) throw new BadRequestException('User not found');
+
+    const token = this.jwtService.sign(
+      {
+        userId: user.id,
+        telegramId: user.telegramId,
+        username: user.username,
+        role: this.determineUserRole(user),
+      },
+      {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') || '7d',
+      }
+    );
+
+    return { accessToken: token };
+  }
 }

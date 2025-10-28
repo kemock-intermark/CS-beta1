@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CatalogService {
@@ -129,5 +130,34 @@ export class CatalogService {
     }
 
     return pkg;
+  }
+
+  async createEvent(dto: {
+    venueId: string;
+    hallId?: string;
+    name: string;
+    description?: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    capacity?: number;
+    coverCharge?: string;
+  }) {
+    const event = await this.prisma.event.create({
+      data: {
+        venueId: dto.venueId,
+        hallId: dto.hallId || null,
+        name: dto.name,
+        description: dto.description,
+        date: new Date(dto.date),
+        startTime: new Date(dto.startTime),
+        endTime: new Date(dto.endTime),
+        capacity: dto.capacity,
+        coverCharge: dto.coverCharge ? new Prisma.Decimal(dto.coverCharge) : null,
+        status: 'PUBLISHED',
+        isActive: true,
+      },
+    });
+    return event;
   }
 }
