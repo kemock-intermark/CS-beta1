@@ -15,7 +15,7 @@ export default function AdminPage() {
     setMounted(true);
     
     // Auto-login with valid JWT token for admin
-    const validAdminToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NjYwZDc0YS0xOWQ0LTQ1ZGQtYTZjZi0zMjFmZjJmNjdkYTEiLCJ0ZWxlZ3JhbUlkIjoiYnJvd3Nlcl9hZG1pbiIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjE2NTkzNzEsImV4cCI6MTc2MjI2NDE3MX0.vSLYsayqAQZ6fUz7yf7pdYg3kSXglBGlm6QtkQcsISg';
+    const validAdminToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NjYwZDc0YS0xOWQ0LTQ1ZGQtYTZjZi0zMjFmZjJmNjdkYTEiLCJ0ZWxlZ3JhbUlkIjoiYnJvd3Nlcl9hZG1pbiIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjE2NjQxMjksImV4cCI6MTc2MjI2ODkyOX0.17-1_bVAHrcwMQam3IAGOy5U0e7eWnVl0A54EDQVLAQ';
     if (typeof window !== 'undefined') {
       localStorage.setItem('auth_token', validAdminToken);
     }
