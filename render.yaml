@@ -5,7 +5,7 @@ services:
     region: oregon
     plan: starter
     autoDeploy: true
-    buildCommand: corepack enable && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/api run db:generate && pnpm --filter @clubsuite/api run build
+    buildCommand: corepack enable && pnpm i --frozen-lockfile && pnpm --filter @clubsuite/api run db:generate && pnpm --filter @clubsuite/api run build && pnpm --filter @clubsuite/api run db:push
     startCommand: pnpm --filter @clubsuite/api start
     envVars:
       - key: NODE_ENV
