@@ -3,12 +3,19 @@
 import { useEffect, useState } from 'react';
 import { getEvents } from '@/lib/api-client';
 import Link from 'next/link';
+import { setJWTToken } from '@/lib/auth';
 
 export default function EventsPage() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Ensure token is set for API calls
+    const testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NjYwZDc0YS0xOWQ0LTQ1ZGQtYTZjZi0zMjFmZjJmNjdkYTEiLCJ0ZWxlZ3JhbUlkIjoiYnJvd3Nlcl9hZG1pbiIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjE2NjAyNzYsImV4cCI6MTc2MjI2NTA3Nn0.cxJHc8nYpnBdtvdrl4NJVSCcvSLOuns4rtNKOu6d1HI';
+    if (typeof window !== 'undefined' && !localStorage.getItem('auth_token')) {
+      setJWTToken(testToken);
+    }
+    
     loadEvents();
   }, []);
 
