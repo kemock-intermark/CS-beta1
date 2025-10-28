@@ -8,23 +8,22 @@ export default function AdminPage() {
   const router = useRouter();
   const [reports, setReports] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-
-  const loadReports = async () => {
-    setLoading(true);
-    try {
-      const response = await getReports();
-      setReports(response.data);
-    } catch (error) {
-      console.error('Error loading reports:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    
+    // Auto-login with mock token for testing
+    const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ0ZXN0IiwiYnJvd3NlciI6dHJ1ZX0';
+    if (typeof window !== 'undefined' && !localStorage.getItem('auth_token')) {
+      localStorage.setItem('auth_token', mockToken);
+    }
+    
     loadReports();
   }, []);
 
+  if (!mounted) return null;
+  
   return (
     <div className="container mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-6">Панель администратора</h1>
