@@ -27,7 +27,6 @@ export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
 
   @Get('events')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get active events' })
   @ApiResponse({ status: 200, description: 'List of active events' })
   async getEvents(
@@ -62,7 +61,6 @@ export class CatalogController {
   }
 
   @Get('packages')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get active packages' })
   @ApiQuery({
     name: 'eventId',
