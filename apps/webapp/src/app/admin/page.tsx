@@ -14,10 +14,10 @@ export default function AdminPage() {
   useEffect(() => {
     setMounted(true);
     
-    // Auto-login with mock token for testing
-    const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ0ZXN0IiwiYnJvd3NlciI6dHJ1ZX0';
-    if (typeof window !== 'undefined' && !localStorage.getItem('auth_token')) {
-      localStorage.setItem('auth_token', mockToken);
+    // Auto-login with valid JWT token for admin
+    const validAdminToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NjYwZDc0YS0xOWQ0LTQ1ZGQtYTZjZi0zMjFmZjJmNjdkYTEiLCJ0ZWxlZ3JhbUlkIjoiYnJvd3Nlcl9hZG1pbiIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjE2NTkzNzEsImV4cCI6MTc2MjI2NDE3MX0.vSLYsayqAQZ6fUz7yf7pdYg3kSXglBGlm6QtkQcsISg';
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('auth_token', validAdminToken);
     }
   }, []);
 
