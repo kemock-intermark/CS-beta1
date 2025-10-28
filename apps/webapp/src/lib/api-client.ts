@@ -36,6 +36,7 @@ apiClient.interceptors.request.use((config) => {
 });
 
 export const getEvents = () => apiClient.get('/catalog/events');
+export const getEventById = (id: string) => apiClient.get(`/catalog/events/${id}`);
 export const getPackages = (eventId?: string) => apiClient.get('/catalog/packages', { params: { eventId } });
 export const getReservations = () => apiClient.get('/reservations');
 export const getTickets = () => apiClient.get('/tickets');
@@ -75,5 +76,7 @@ export const adminCreatePackage = (payload: {
 export const adminSeedDatabase = () => apiClient.post('/catalog/admin/seed');
 
 export const adminGetEvents = () => apiClient.get('/catalog/admin/events');
+
+export const adminGetUsers = () => apiClient.get('/admin/users');
 
 export default apiClient;
