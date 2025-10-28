@@ -30,29 +30,29 @@ export default function AdminPage() {
       <h1 className="text-2xl font-bold mb-6">Панель администратора</h1>
 
       <div className="grid gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-xl shadow-md ring-1 ring-slate-100 p-6">
           <h2 className="text-lg font-bold mb-4">Управление событиями</h2>
-          <button onClick={() => router.push('/admin/events/create')} className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button onClick={() => router.push('/admin/events/create')} className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm">
             + Добавить событие
           </button>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-xl shadow-md ring-1 ring-slate-100 p-6">
           <h2 className="text-lg font-bold mb-4">Управление пакетами</h2>
-          <button onClick={() => router.push('/admin/packages/new')} className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button onClick={() => router.push('/admin/packages/new')} className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm">
             + Добавить пакет
           </button>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-xl shadow-md ring-1 ring-slate-100 p-6">
           <h2 className="text-lg font-bold mb-4">Пользователи</h2>
-          <button onClick={() => router.push('/admin/users')} className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+          <button onClick={() => router.push('/admin/users')} className="w-full px-4 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700 shadow-sm">
             Управление пользователями
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-xl shadow-md ring-1 ring-slate-100 p-6">
         <h2 className="text-lg font-bold mb-4">Аналитика</h2>
         
         {loading ? (
