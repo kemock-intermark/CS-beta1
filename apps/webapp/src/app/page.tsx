@@ -38,7 +38,11 @@ function HomeContent() {
         }
       }
     } else {
-      // Not in Telegram, check for existing auth
+      // Not in Telegram, use test token for development
+      const testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NjYwZDc0YS0xOWQ0LTQ1ZGQtYTZjZi0zMjFmZjJmNjdkYTEiLCJ0ZWxlZ3JhbUlkIjoiYnJvd3Nlcl9hZG1pbiIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjE2NjAyNzYsImV4cCI6MTc2MjI2NTA3Nn0.cxJHc8nYpnBdtvdrl4NJVSCcvSLOuns4rtNKOu6d1HI';
+      if (!localStorage.getItem('auth_token')) {
+        localStorage.setItem('auth_token', testToken);
+      }
       const currentRole = getUserRole();
       setRole(currentRole);
     }
