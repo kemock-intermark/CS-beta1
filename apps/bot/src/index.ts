@@ -63,7 +63,7 @@ try {
     bot.api.setChatMenuButton({
       menu_button: {
         type: 'web_app',
-        text: '🎯 Открыть ClubSuite',
+        text: 'ClubSuite',
         web_app: { url: webappUrl },
       },
     });

@@ -1,7 +1,7 @@
 import { InlineKeyboard } from 'grammy';
 
 export const mainMenu = new InlineKeyboard()
-  .webApp('🎯 Открыть Mini App', process.env.WEBAPP_BASE_URL + '/app')
+  .webApp('🎯 ClubSuite', process.env.WEBAPP_BASE_URL + '/app')
   .row()
   .text('📅 Мероприятия', 'events')
   .text('📝 Забронировать', 'book')

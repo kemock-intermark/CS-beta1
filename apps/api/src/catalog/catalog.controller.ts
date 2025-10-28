@@ -92,4 +92,13 @@ export class CatalogController {
   async createPackage(@Body() dto: CreatePackageDto) {
     return this.catalogService.createPackage(dto);
   }
+
+  @Post('admin/seed')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Seed database with test data' })
+  @ApiResponse({ status: 201, description: 'Database seeded' })
+  async seedDatabase() {
+    return this.catalogService.seedDatabase();
+  }
 }

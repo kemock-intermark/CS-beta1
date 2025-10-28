@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { adminSeedDatabase, getReports } from '@/lib/api-client';
 
 export default function AdminPage() {
   const router = useRouter();
   const [reports, setReports] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [seeding, setSeeding] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -17,10 +19,31 @@ export default function AdminPage() {
     if (typeof window !== 'undefined' && !localStorage.getItem('auth_token')) {
       localStorage.setItem('auth_token', mockToken);
     }
-    
-    // Reports loading disabled for now
-    // loadReports();
   }, []);
+
+  const loadReports = async () => {
+    setLoading(true);
+    try {
+      const response = await getReports();
+      setReports(response.data);
+    } catch (error) {
+      console.error('Error loading reports:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSeed = async () => {
+    setSeeding(true);
+    try {
+      await adminSeedDatabase();
+      alert('База данных успешно заполнена тестовыми данными!');
+    } catch (error: any) {
+      alert(error?.response?.data?.message || 'Ошибка заполнения базы данных');
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   if (!mounted) return null;
   
@@ -61,27 +84,35 @@ export default function AdminPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">Всего пользователей</p>
-                <p className="text-2xl font-bold">{reports.summary.totalUsers}</p>
+                <p className="text-2xl font-bold">{reports.summary?.totalUsers || 0}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Событий</p>
-                <p className="text-2xl font-bold">{reports.summary.totalEvents}</p>
+                <p className="text-2xl font-bold">{reports.summary?.totalEvents || 0}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Бронирований</p>
-                <p className="text-2xl font-bold">{reports.summary.totalReservations}</p>
+                <p className="text-2xl font-bold">{reports.summary?.totalReservations || 0}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Выручка</p>
-                <p className="text-2xl font-bold text-green-600">${reports.summary.totalRevenue}</p>
+                <p className="text-2xl font-bold text-green-600">${reports.summary?.totalRevenue || 0}</p>
               </div>
             </div>
           </div>
         ) : (
-          <button onClick={loadReports} className="px-4 py-2 bg-gray-600 text-white rounded-lg">
+          <button onClick={loadReports} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
             Загрузить отчёты
           </button>
         )}
+      </div>
+
+      <div className="bg-white rounded-xl shadow-md ring-1 ring-slate-100 p-6">
+        <h2 className="text-lg font-bold mb-4">Тестирование</h2>
+        <button onClick={handleSeed} disabled={seeding} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-60">
+          {seeding ? 'Заполнение...' : 'Заполнить БД тестовыми данными'}
+        </button>
+        <p className="text-sm text-gray-500 mt-2">Создаст venue, halls, event, packages, users</p>
       </div>
     </div>
   );

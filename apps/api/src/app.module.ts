@@ -12,6 +12,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { CheckinModule } from './checkin/checkin.module';
 import { PromotersModule } from './promoters/promoters.module';
 import { ReportsModule } from './reports/reports.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ReportsModule } from './reports/reports.module';
     CheckinModule,
     PromotersModule,
     ReportsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

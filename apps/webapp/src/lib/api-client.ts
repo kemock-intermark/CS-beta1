@@ -72,4 +72,6 @@ export const adminCreatePackage = (payload: {
   maxGuests?: number;
 }) => apiClient.post('/catalog/admin/packages', payload);
 
+export const adminSeedDatabase = () => apiClient.post('/catalog/admin/seed');
+
 export default apiClient;
