@@ -193,7 +193,7 @@ export class CatalogService {
     // Check if data already exists
     const existingEvents = await prisma.event.count();
     if (existingEvents > 0) {
-      return { message: 'Database already has data. Skipping seed.' };
+      return { message: 'Database already has data. Skipping seed.', exists: true };
     }
 
     // Create Venue
