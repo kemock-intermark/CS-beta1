@@ -104,6 +104,29 @@ class ApiClient {
       throw error;
     }
   }
+
+  // Generic HTTP methods for promoter and other custom endpoints
+  async get(url: string, userId?: string) {
+    try {
+      const headers = userId ? await this.getHeaders(userId) : {};
+      const response = await axios.get(`${this.baseURL}${url}`, { headers });
+      return response;
+    } catch (error) {
+      logger.error(`Error in GET ${url}:`, error);
+      throw error;
+    }
+  }
+
+  async post(url: string, data: any, userId?: string) {
+    try {
+      const headers = userId ? await this.getHeaders(userId) : {};
+      const response = await axios.post(`${this.baseURL}${url}`, data, { headers });
+      return response;
+    } catch (error) {
+      logger.error(`Error in POST ${url}:`, error);
+      throw error;
+    }
+  }
 }
 
 export const apiClient = new ApiClient();
