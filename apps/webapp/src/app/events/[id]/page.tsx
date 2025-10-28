@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getEventById } from '@/lib/api-client';
-import Link from 'next/link';
 
 export default function EventDetailPage() {
   const { id } = useParams();
