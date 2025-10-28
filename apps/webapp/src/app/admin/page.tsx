@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getReports } from '@/lib/api-client';
 
 export default function AdminPage() {
   const router = useRouter();
@@ -19,7 +18,8 @@ export default function AdminPage() {
       localStorage.setItem('auth_token', mockToken);
     }
     
-    loadReports();
+    // Reports loading disabled for now
+    // loadReports();
   }, []);
 
   if (!mounted) return null;
