@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getEvents, getEventById, createReservation, purchaseTicket } from '@/lib/api-client';
+import { getEventById, createReservation, purchaseTicket } from '@/lib/api-client';
 
 function BookingContent() {
   const router = useRouter();
