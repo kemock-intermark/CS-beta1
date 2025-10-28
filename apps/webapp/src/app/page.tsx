@@ -3,7 +3,6 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getUserRole } from '@/lib/auth';
-import { Button } from '@/components/layout/Button';
 import { validateTelegram } from '@/lib/api-client';
 
 function HomeContent() {
@@ -18,7 +17,7 @@ function HomeContent() {
 
   const initializeApp = async () => {
     // Check if opened from Telegram
-    const tg = window.Telegram?.WebApp;
+    const tg = (window as any).Telegram?.WebApp;
     
     if (tg) {
       tg.ready();
@@ -77,29 +76,50 @@ function HomeContent() {
 
   if (!initialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Загрузка...</p>
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+            <div className="absolute inset-0 animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-pink-500 animation-delay-150"></div>
+          </div>
+          <p className="text-gray-400 mt-4 tracking-wider uppercase text-sm">Loading ClubSuite...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-2xl font-bold text-center mb-6">ClubSuite</h1>
-        <p className="text-center text-gray-600 mb-6">
-          Откройте приложение через Telegram
-        </p>
-        <div className="space-y-3">
-          <Button onClick={() => router.push('/events')} fullWidth>
-            Просмотр событий
-          </Button>
-          <Button onClick={() => router.push('/book')} fullWidth variant="secondary">
-            Забронировать стол
-          </Button>
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-600 mb-4 tracking-tight">
+            CLUBSUITE
+          </h1>
+          <p className="text-gray-400 text-lg tracking-widest uppercase">
+            Premium Nightlife Platform
+          </p>
+        </div>
+        
+        <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8">
+          <p className="text-center text-gray-400 mb-8">
+            Please open ClubSuite through Telegram for full experience
+          </p>
+          
+          <div className="space-y-4">
+            <button 
+              onClick={() => router.push('/events')}
+              className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
+            >
+              Browse Events
+            </button>
+            
+            <button 
+              onClick={() => router.push('/admin')}
+              className="w-full py-4 bg-gradient-to-r from-gray-800 to-gray-900 text-white font-bold rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-300"
+            >
+              Admin Panel
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -109,10 +129,9 @@ function HomeContent() {
 export default function Home() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Загрузка...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
         </div>
       </div>
     }>
